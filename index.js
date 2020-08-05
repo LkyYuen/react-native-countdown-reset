@@ -131,7 +131,9 @@ class CountDownReset extends React.Component {
       }
       else {
         this.setState({lastUntil: 0, until: 0});
-        this.props.onFinish();
+        if (this.props.onFinish) {
+            this.props.onFinish();
+        }
       }
     } else {
       if (this.props.onChange) {
