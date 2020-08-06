@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import {sprintf} from 'sprintf-js';
+import moment from 'moment';
 
 const DEFAULT_DIGIT_STYLE = {backgroundColor: '#FAB913'};
 const DEFAULT_DIGIT_TXT_STYLE = {color: '#000'};
@@ -63,12 +64,20 @@ class CountDownReset extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.until !== prevProps.until || this.props.id !== prevProps.id) {
-      this.setState({
-        lastUntil: prevState.until,
-        until: Math.max(prevProps.until, 0)
-      });
+      if (this.props.reset) {
+        if (moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds() < 0) {
+          this.setState({ lastUntil: prevState.until, until: Math.max(prevProps.until, 0) });
+        }
+        else {
+          this.setState({lastUntil: prevState.until, until: moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds(), countUp: true});
+        }
+      }
+      else {
+        this.setState({ lastUntil: prevState.until, until: Math.max(prevProps.until, 0) });
+      }
     }
   }
+  
   // componentWillReceiveProps(nextProps) {
   //   if (this.props.until !== nextProps.until || this.props.id !== nextProps.id) {
   //     this.setState({
@@ -76,6 +85,21 @@ class CountDownReset extends React.Component {
   //       until: Math.max(nextProps.until, 0)
   //     });
   //   }
+  // }
+
+  // shouldComponentUpdate(prevState, nextState) {
+  //   if (nextState.countUp == false) {
+
+  //     if (this.props.countFrom) {
+  //       this.setState({lastUntil: 2, until: moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds(), countUp: true});
+  //     }
+  //     else {
+  //       this.setState({lastUntil: 2, until: 1, countUp: true});
+  //     }
+
+  //     return false;
+  //   }
+  //   return true;
   // }
 
   _handleAppStateChange = currentAppState => {
@@ -111,6 +135,8 @@ class CountDownReset extends React.Component {
         return;
     }
 
+    console.log(this.state.until);
+
     if ((this.state.until === 0 && this.state.lastUntil !== 1)) {
         //   if (this.props.onFinish) {
             // this.setState({ countUp: true });
@@ -122,9 +148,16 @@ class CountDownReset extends React.Component {
         }
     }
 
+    // if (this.state.until === 0) {
     if (this.state.until === 0 && this.state.countUp == false) {
       if (this.props.reset) {
-        this.setState({lastUntil: 2, until: 1, countUp: true});
+        if (this.props.countFrom) {
+          this.setState({lastUntil: 2, until: moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds(), countUp: true});
+        }
+        else {
+          this.setState({lastUntil: 2, until: 1, countUp: true});
+        }
+
         if (this.props.onFinish) {
           this.props.onFinish();
         }
@@ -132,7 +165,7 @@ class CountDownReset extends React.Component {
       else {
         this.setState({lastUntil: 0, until: 0});
         if (this.props.onFinish) {
-            this.props.onFinish();
+          this.props.onFinish();
         }
       }
     } else {

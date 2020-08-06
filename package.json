@@ -1,7 +1,7 @@
 {
   "name": "react-native-countdown-reset",
   "title": "React Native Countdown Reset",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "React Native Countdown Reset",
   "main": "index.js",
   "files": [
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.19",
+    "moment": "^2.27.0",
     "prop-types": "^15.7.2",
     "sprintf-js": "^1.1.2"
   }
