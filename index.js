@@ -65,11 +65,16 @@ class CountDownReset extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.until !== prevProps.until || this.props.id !== prevProps.id) {
       if (this.props.reset) {
-        if (moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds() < 0) {
-          this.setState({ lastUntil: prevState.until, until: Math.max(prevProps.until, 0) });
+        if (this.props.countFrom) {
+          if (moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds() < 0) {
+            this.setState({ lastUntil: prevState.until, until: Math.max(prevProps.until, 0) });
+          }
+          else {
+            this.setState({lastUntil: prevState.until, until: moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds(), countUp: true});
+          }
         }
         else {
-          this.setState({lastUntil: prevState.until, until: moment.duration(moment(new Date()).diff(moment(this.props.countFrom))).asSeconds(), countUp: true});
+          this.setState({lastUntil: 2, until: 1, countUp: true});
         }
       }
       else {
@@ -134,8 +139,6 @@ class CountDownReset extends React.Component {
     if (this.state.lastUntil === this.state.until || !this.props.running) {
         return;
     }
-
-    console.log(this.state.until);
 
     if ((this.state.until === 0 && this.state.lastUntil !== 1)) {
         //   if (this.props.onFinish) {
